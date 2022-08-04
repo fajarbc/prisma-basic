@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model articles {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at DateTime?
+  updated_at DateTime?
+  deleted_at DateTime?
+  title      String?   @db.LongText
+  content    String?   @db.LongText
+  slug       String?   @db.LongText
+  status     Int?      @db.UnsignedTinyInt
+  author_id  BigInt?
+  authors    authors?  @relation(fields: [author_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_articles_author")
+
+  @@index([author_id], map: "fk_articles_author")
+  @@index([deleted_at], map: "idx_articles_deleted_at")
+}
+
+model authors {
+  id         BigInt     @id @default(autoincrement())
+  name       String?    @db.LongText
+  email      String?    @db.LongText
+  status     Int?       @db.UnsignedTinyInt
+  username   String?    @db.LongText
+  password   String?    @db.LongText
+  created_at DateTime?
+  updated_at DateTime?
+  articles   articles[]
+}
